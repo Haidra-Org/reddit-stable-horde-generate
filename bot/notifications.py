@@ -57,7 +57,6 @@ class MentionHandler:
         if db_r.get(str(self.notification.author)):
             logger.warning(f"Too frequent requests from {self.notification.author}")
             return
-        db_r.setex(str(self.notification.author), timedelta(seconds=20), 1)
         if False: #TODO Ensure it's a comment mention
             self.handle_dm()
         else:
@@ -78,6 +77,7 @@ class MentionHandler:
         if len(styles_array) == 0:
             self.reply_faulted("We could not discover this style in our database. Please pick one from [styles](https://github.com/db0/Stable-Horde-Styles/blob/main/styles.json) or [categories](https://github.com/db0/Stable-Horde-Styles/blob/main/categories.json)")
             return
+        db_r.setex(str(self.notification.author), timedelta(seconds=20), 1)
         # For now we're only have the same styles on each element. Later we might be able to have multiple ones.
         unformated_prompt = reg_res.group(1)[0:500]
         negprompt = ''
