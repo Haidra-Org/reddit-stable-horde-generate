@@ -3,11 +3,13 @@ import time
 from bot import reddit
 from bot.logger import logger
 from bot.notifications import MentionHandler
+from bot.redisctrl import db_r
 
 REDDIT_BLACKLIST =  [
     "suicidewatch"
     "depression"
 ]
+
 class StreamListenerExtended:
     stop_thread = False
 
@@ -15,7 +17,7 @@ class StreamListenerExtended:
         super().__init__()
         self.queue = []
         self.processing_notifications = []
-        self.concurrency = 4
+        self.concurrency = 3
         self.queue_thread = threading.Thread(target=self.process_queue, args=())
         self.queue_thread.daemon = True
         self.queue_thread.start()
@@ -23,6 +25,10 @@ class StreamListenerExtended:
             if item.subreddit in REDDIT_BLACKLIST:
                 logger.warning(f"Avoiding comment {item} in blacklisted subreddit {item.subreddit}")
                 continue
+            if db_r.get(str(item.author)):
+                logger.warning(f"Too frequent requests from {item.author}")
+                continue
+            db_r.setex(str(item.author), timedelta(minutes=5), 1)
             logger.info(f"Processing comment {item} in subreddit {item.subreddit}")
             self.on_notification(item)
 
