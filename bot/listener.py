@@ -17,7 +17,6 @@ class StreamListenerExtended:
         self.queue_thread.daemon = True
         self.queue_thread.start()
         for item in reddit.inbox.stream():
-            logger.debug(item)
             self.on_notification(item)
 
     @logger.catch(reraise=True)

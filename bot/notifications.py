@@ -43,7 +43,6 @@ class MentionHandler:
     def __init__(self, notification):
         self.status = JobStatus.INIT
         self.notification = notification
-        logger.debug([notification.id,notification.author,notification.body,notification.subreddit,])
         self.request_id = self.notification.id
         self.mention_content = BeautifulSoup(self.notification.body_html,features="html.parser").get_text()
 
