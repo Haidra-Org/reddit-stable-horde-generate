@@ -114,7 +114,7 @@ class MentionHandler:
         for job in gen.get_all_done_jobs():
             image_dict = {
                 "image_path": job.filename, 
-                "caption": f"Seed {job.seed}. Prompt: {job.prompt}"
+                "caption": f"Seed {job.seed}. Prompt: {job.prompt}"[0:179]
             }
             images_payload.append(image_dict)
         logger.info(f"replying to {self.request_id}: {self.mention_content}")
