@@ -52,7 +52,8 @@ class MentionHandler:
         
     @logger.catch(reraise=True)
     def handle_notification(self):
-        if db_r.get(self.request_id):
+        db_r.setex(str(self.request_id), timedelta(days=120), 1)
+        if db_r.get(str(self.request_id)):
             self.status = JobStatus.FAULTED
             return
         if False: #TODO Ensure it's a comment mention
@@ -68,7 +69,7 @@ class MentionHandler:
         reg_res = term_regex.search(self.mention_content)
         if not reg_res:
             logger.info(f"{self.request_id} is not a generation request, skipping")
-            db_r.setex(str(self.request_id), timedelta(days=30), 1)
+            db_r.setex(str(self.request_id), timedelta(days=120), 1)
             self.status = JobStatus.DONE
             return
         styles_array, requested_style = parse_style(self.mention_content)
@@ -164,18 +165,18 @@ class MentionHandler:
             self.set_faulted()
             logger.error(f"Reddit Exception: {e}. Aborting!")
             return
-        db_r.setex(str(self.request_id), timedelta(days=30), 1)
+        db_r.setex(str(self.request_id), timedelta(days=120), 1)
         self.status = JobStatus.DONE
 
     def handle_dm(self):
         # pp.pprint(notification)
         logger.debug(f"Handling notification {self.request_id} as a DM")
-        db_r.setex(str(self.request_id), timedelta(days=30), 1)
+        db_r.setex(str(self.request_id), timedelta(days=120), 1)
         self.status = JobStatus.DONE
 
     def set_faulted(self):
         self.status = JobStatus.FAULTED
-        db_r.setex(str(self.request_id), timedelta(days=30), 1)
+        db_r.setex(str(self.request_id), timedelta(days=120), 1)
 
     def reply_faulted(self,message):
         self.set_faulted()
