@@ -132,9 +132,10 @@ class MentionHandler:
                 logger.error(f"Bad filename. Aborting!")
                 return
             except (RedditAPIException) as e:
-                self.set_faulted()
-                logger.error(f"Reddit Exception: {e}. Aborting!")
-                return
+                if iter >= 3:
+                    self.set_faulted()
+                    logger.error(f"Reddit Exception: {e}. Aborting!")
+                    return
         submission_images = submission.media_metadata
         image_markdowns = []
         iter = 0
