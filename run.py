@@ -8,7 +8,7 @@ from bot import reddit
 
 @logger.catch(reraise=True)
 def check_for_requests():
-    for comment in reddit.inbox.mentions():
+    for comment in reddit.inbox.all():
         logger.debug([comment.author,comment.body,comment.subreddit,])
 
 
