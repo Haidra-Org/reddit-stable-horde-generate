@@ -57,7 +57,7 @@ class MentionHandler:
         if db_r.get(str(self.notification.author)):
             logger.warning(f"Too frequent requests from {self.notification.author}")
             return
-        db_r.setex(str(self.notification.author), timedelta(minutes=2), 1)
+        db_r.setex(str(self.notification.author), timedelta(seconds=20), 1)
         if False: #TODO Ensure it's a comment mention
             self.handle_dm()
         else:
