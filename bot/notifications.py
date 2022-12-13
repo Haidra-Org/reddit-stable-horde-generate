@@ -52,7 +52,7 @@ class MentionHandler:
         
     @logger.catch(reraise=True)
     def handle_notification(self):
-        if db_r.get(comment.id):
+        if db_r.get(self.request_id):
             self.status = JobStatus.FAULTED
             return
         if False: #TODO Ensure it's a comment mention
