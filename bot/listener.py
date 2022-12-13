@@ -16,7 +16,7 @@ class StreamListenerExtended:
         self.queue_thread = threading.Thread(target=self.process_queue, args=())
         self.queue_thread.daemon = True
         self.queue_thread.start()
-        for item in reddit.inbox.stream():
+        for item in reddit.inbox.stream(0):
             logger.debug(item)
             self.on_notification(item)
 
