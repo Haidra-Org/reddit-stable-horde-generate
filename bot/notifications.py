@@ -7,7 +7,7 @@ from bot.horde import HordeMultiGen
 from bot.enums import JobStatus
 from bot.redisctrl import db_r
 from bot import reddit
-from praw.exceptions import ClientException
+from praw.exceptions import ClientException, RedditAPIException
 
 imgen_params = {
     "n": 1,
@@ -123,6 +123,10 @@ class MentionHandler:
                 self.set_faulted()
                 logger.error(f"Bad filename. Aborting!")
                 return
+            except (RedditAPIException) as e:
+                self.set_faulted()
+                logger.error(f"Reddit Exception: {e}. Aborting!")
+                return
         submission_images = submission.media_metadata
         image_markdowns = []
         iter = 0
@@ -135,14 +139,19 @@ class MentionHandler:
             )
         for fn in gen.get_all_filenames():
             os.remove(fn)
-        self.notification.reply(
-            reply_string.format(
-                submission_url = submission.permalink,
-                image_markdown_list = " ".join(image_markdowns),
-                unformated_prompt = unformated_prompt,
-                requested_style = requested_style,
+        try:
+            self.notification.reply(
+                reply_string.format(
+                    submission_url = submission.permalink,
+                    image_markdown_list = " ".join(image_markdowns),
+                    unformated_prompt = unformated_prompt,
+                    requested_style = requested_style,
+                )
             )
-        )
+        except RedditAPIException as e:
+            self.set_faulted()
+            logger.error(f"Reddit Exception: {e}. Aborting!")
+            return
         db_r.setex(str(self.request_id), timedelta(days=30), 1)
         self.status = JobStatus.DONE
 
@@ -158,9 +167,13 @@ class MentionHandler:
 
     def reply_faulted(self,message):
         self.set_faulted()
-        self.notification.reply(
-            message
-        )
+        try:
+            self.notification.reply(
+                message
+            )
+        except RedditAPIException as e:
+            logger.error(f"Reddit Exception: {e}. Aborting!")
+            return
 
 def get_styles():
     # styles = db_r.get("styles")
