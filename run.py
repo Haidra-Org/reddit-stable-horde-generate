@@ -19,7 +19,8 @@ def check_for_requests():
 
 logger.init("Reddit Stable Horde Bot", status="Starting")
 try:
-    check_for_requests()
+    # Normally this shouldn't be needed, as the initial stream gets the last 100
+    # check_for_requests()
     while True:
         try:
             logger.debug(f"Starting Reddit Inbox Stream")
