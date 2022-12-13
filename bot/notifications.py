@@ -132,6 +132,15 @@ class MentionHandler:
         iter = 0
         for image_item in submission_images.values():
             iter += 1
+            for proc_iter in range(10):
+                if image_item.get("status") == "unprocessed":
+                    time.sleep(1)
+                    logger.debug(f"Image still processing. Sleeping ({proc_iter}/10)")
+                    continue
+            if image_item.get("status") == "unprocessed":
+                self.set_faulted()
+                logger.error(f"Images taking unreasonably long to process. Aborting!")
+                return
             largest_image = image_item['s']
             image_url = largest_image['u']
             image_markdowns.append(
