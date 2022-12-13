@@ -52,7 +52,6 @@ class MentionHandler:
         
     @logger.catch(reraise=True)
     def handle_notification(self):
-        db_r.setex(str(self.request_id), timedelta(days=120), 1)
         if db_r.get(str(self.request_id)):
             self.status = JobStatus.FAULTED
             return
