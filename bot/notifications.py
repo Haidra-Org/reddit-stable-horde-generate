@@ -117,7 +117,7 @@ class MentionHandler:
         logger.info(f"replying to {self.request_id}: {self.mention_content}")
         for iter in range(4):
             try:
-                submission = subreddit.submit_gallery(f"{self.request_id} - {requested_style}: {unformated_prompt}", images_payload)
+                submission = subreddit.submit_gallery(f"{requested_style}: {unformated_prompt}", images_payload)
                 break
             except (ClientException) as e:
                 self.set_faulted()
