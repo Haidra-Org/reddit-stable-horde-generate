@@ -3,6 +3,7 @@ import time
 import threading
 from bot.logger import logger
 from bot.listener import StreamListenerExtended
+from bot.notifications import MentionHandler
 from bot import reddit
 
 
@@ -10,6 +11,12 @@ from bot import reddit
 def check_for_requests():
     for comment in reddit.inbox.all():
         logger.debug([comment.author,comment.body,comment.subreddit,])
+    waiting_threads = []
+    for comment in reddit.inbox.all():
+        notification_handler = MentionHandler(notification)
+        thread = threading.Thread(target=notification_handler.handle_notification, args=())
+        thread.start()
+        waiting_threads.append(thread)    
 
 
 logger.init("Reddit Stable Horde Bot", status="Starting")
