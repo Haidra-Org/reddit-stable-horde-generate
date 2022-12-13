@@ -54,10 +54,10 @@ class MentionHandler:
         if db_r.get(str(self.request_id)):
             self.status = JobStatus.FAULTED
             return
-        if db_r.get(str(item.author)):
-            logger.warning(f"Too frequent requests from {item.author}")
+        if db_r.get(str(self.notification.author)):
+            logger.warning(f"Too frequent requests from {self.notification.author}")
             return
-        db_r.setex(str(item.author), timedelta(minutes=5), 1)
+        db_r.setex(str(self.notification.author), timedelta(minutes=5), 1)
         if False: #TODO Ensure it's a comment mention
             self.handle_dm()
         else:
