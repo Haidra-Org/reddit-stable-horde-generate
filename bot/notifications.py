@@ -121,6 +121,7 @@ class MentionHandler:
             }
             images_payload.append(image_dict)
         logger.info(f"replying to {self.request_id}: {self.mention_content}")
+        logger.debug(f"images payload {images_payload}")
         for iter in range(4):
             try:
                 submission = subreddit.submit_gallery(f"{requested_style}: {unformated_prompt}", images_payload)
