@@ -4,7 +4,10 @@ from bot import reddit
 from bot.logger import logger
 from bot.notifications import MentionHandler
 
-
+REDDIT_BLACKLIST =  [
+    "suicidewatch"
+    "depression"
+]
 class StreamListenerExtended:
     stop_thread = False
 
@@ -17,6 +20,10 @@ class StreamListenerExtended:
         self.queue_thread.daemon = True
         self.queue_thread.start()
         for item in reddit.inbox.stream():
+            if item.subreddit in REDDIT_BLACKLIST:
+                logger.warning(f"Avoiding comment {item} in blacklisted subreddit {item.subreddit}")
+                continue
+            logger.info(f"Processing comment {item} in subreddit {item.subreddit}")
             self.on_notification(item)
 
     @logger.catch(reraise=True)
