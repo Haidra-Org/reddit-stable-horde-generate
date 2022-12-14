@@ -82,8 +82,6 @@ class MentionHandler:
         if len(styles_array) == 0:
             self.reply_faulted("We could not discover this style in our database. Please pick one from [styles](https://github.com/db0/Stable-Horde-Styles/blob/main/styles.json) or [categories](https://github.com/db0/Stable-Horde-Styles/blob/main/categories.json)")
             return
-        self.status = JobStatus.FAULTED
-        return
         db_r.setex(str(self.notification.author), timedelta(seconds=20), 1)
         unformated_prompt = reg_res.group(1)[0:500]
         if blacklist.search(self.unformated_prompt):
