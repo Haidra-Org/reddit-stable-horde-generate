@@ -1,5 +1,5 @@
 praw>=7
-psaw
 requests
 redis
 bs4
+boto3
