@@ -82,7 +82,7 @@ class MentionHandler:
         if len(styles_array) == 0:
             self.reply_faulted("We could not discover this style in our database. Please pick one from [styles](https://github.com/db0/Stable-Horde-Styles/blob/main/styles.json) or [categories](https://github.com/db0/Stable-Horde-Styles/blob/main/categories.json)")
             return
-        db_r.setex(str(self.notification.author), timedelta(seconds=20), 1)
+        # db_r.setex(str(self.notification.author), timedelta(seconds=20), 1) # TODO: Reenale
         unformated_prompt = reg_res.group(1)[0:500]
         if blacklist.search(unformated_prompt):
             logger.warning(f"Detected Blacklist item from {self.notification.author}")
