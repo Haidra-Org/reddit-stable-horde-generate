@@ -9,6 +9,11 @@ REDDIT_BLACKLIST =  [
     "depression"
 ]
 
+REDDIT_WHITELIST =  [
+    "StableDiffusion",
+    None
+]
+
 class StreamListenerExtended:
     stop_thread = False
 
@@ -21,6 +26,9 @@ class StreamListenerExtended:
         self.queue_thread.daemon = True
         self.queue_thread.start()
         for item in reddit.inbox.stream():
+            if len(REDDIT_WHITELIST) and item.subreddit not in REDDIT_BLACKLIST:
+                logger.warning(f"Avoiding comment {item} in non-whitelisted subreddit {item.subreddit}")
+                continue
             if item.subreddit in REDDIT_BLACKLIST:
                 logger.warning(f"Avoiding comment {item} in blacklisted subreddit {item.subreddit}")
                 continue
