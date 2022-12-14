@@ -161,7 +161,7 @@ class HordeGenerate:
                 logger.error("Error reading image data")
                 self.status = JobStatus.FAULTED
                 return
-            self.filename = f"{self.unique_id}_{iter}_horde_generation.jpg"
+            self.filename = f"{self.unique_id}_{iter}_horde_generation.webp"
             self.seed = results[iter]["seed"]
             self.img.save(self.filename)
             logger.debug(f"Saved: {self.filename}")

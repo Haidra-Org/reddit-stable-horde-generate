@@ -40,8 +40,7 @@ Here are {some_images} matching your request\n
 {image_markdown_list}\n
 Prompt: {unformated_prompt}\n
 Style: {requested_style}\n\n
-\n\n
-I am a bot
+*I am a bot*
 """
 
 class MentionHandler:
@@ -126,8 +125,6 @@ class MentionHandler:
             self.upload_to_subreddit(gen, requested_style, unformated_prompt)
         else:
             self.upload_to_r2(gen, requested_style, unformated_prompt)
-        self.status = JobStatus.DONE # Debug
-        return # Debug
         for fn in gen.get_all_filenames():
             os.remove(fn)
         db_r.setex(str(self.request_id), timedelta(days=120), 1)
