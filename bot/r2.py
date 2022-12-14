@@ -13,7 +13,7 @@ def upload_image(filename):
     except ClientError as e:
         logger.error(f"Error encountered while uploading {filename}: {e}")
         return False
-    return generate_img_download_url(filename)
+    return provide_img_public_url(filename)
 
 def delete_image(filename):
     response = s3_client.delete_object(
@@ -46,6 +46,8 @@ def generate_presigned_url(client_method, method_parameters, expires_in):
     # logger.debug(url)
     return url
 
-    
+def provide_img_public_url(filename):
+    return f"https://aihorde.net/{filename}"
+
 def generate_img_download_url(filename):
     return generate_presigned_url("get_object", {'Bucket': "reddit", 'Key': filename}, 604799)
