@@ -36,6 +36,8 @@ Here are [some images]({submission_url}) matching your request\n
 {image_markdown_list}\n
 Prompt: {unformated_prompt}\n
 Style: {requested_style}\n\n
+\n\n
+I am a bot
 """
 
 class MentionHandler:
@@ -77,6 +79,7 @@ class MentionHandler:
         if len(styles_array) == 0:
             self.reply_faulted("We could not discover this style in our database. Please pick one from [styles](https://github.com/db0/Stable-Horde-Styles/blob/main/styles.json) or [categories](https://github.com/db0/Stable-Horde-Styles/blob/main/categories.json)")
             return
+        return
         db_r.setex(str(self.notification.author), timedelta(seconds=20), 1)
         # For now we're only have the same styles on each element. Later we might be able to have multiple ones.
         unformated_prompt = reg_res.group(1)[0:500]
