@@ -7,6 +7,7 @@ from bot.horde import HordeMultiGen
 from bot.enums import JobStatus
 from bot.redisctrl import db_r
 from bot import reddit
+from bot.r2 import upload_image
 from praw.exceptions import ClientException, RedditAPIException
 
 imgen_params = {
@@ -29,10 +30,12 @@ modifier_seek_regex = re.compile(r'style:', re.IGNORECASE)
 prompt_only_regex = re.compile(r'draw for me (.+)style:', re.IGNORECASE)
 style_regex = re.compile(r'style: ?([\w ]+)', re.IGNORECASE)
 
+blacklist = re.compile(os.getenv("BLACKLIST"), re.IGNORECASE)
+
 subreddit = reddit.subreddit("StableHorde")
 
 reply_string = """
-Here are [some images]({submission_url}) matching your request\n
+Here are {some_images} matching your request\n
 {image_markdown_list}\n
 Prompt: {unformated_prompt}\n
 Style: {requested_style}\n\n
@@ -82,8 +85,11 @@ class MentionHandler:
         self.status = JobStatus.FAULTED
         return
         db_r.setex(str(self.notification.author), timedelta(seconds=20), 1)
-        # For now we're only have the same styles on each element. Later we might be able to have multiple ones.
         unformated_prompt = reg_res.group(1)[0:500]
+        if blacklist.search(self.unformated_prompt):
+            logger.warning(f"Detected Blacklist item from {self.notification.author}")
+            self.status = JobStatus.FAULTED
+            return
         negprompt = ''
         if modifier_seek_regex.search(unformated_prompt):
             por = prompt_only_regex.search(self.mention_content)
@@ -117,6 +123,64 @@ class MentionHandler:
                     self.reply_faulted("Something went wrong when trying to fulfil your request. Please try again later")
                 return
             time.sleep(1)
+        if args.subreddit:
+            self.upload_to_subreddit(gen, requested_style, unformated_prompt)
+        else:
+            self.upload_to_r2()
+        self.status = JobStatus.DONE # Debug
+        return # Debug
+        for fn in gen.get_all_filenames():
+            os.remove(fn)
+        db_r.setex(str(self.request_id), timedelta(days=120), 1)
+        self.status = JobStatus.DONE
+
+    def upload_to_r2(self, gen, requested_style, unformated_prompt):
+        images_payload = []
+        for job in gen.get_all_done_jobs():
+            upload_image(job.filename)
+        logger.info(f"replying to {self.request_id}: {self.mention_content}")
+        # logger.debug(f"{requested_style}: {unformated_prompt}")
+        return # DEBUG
+        logger.debug(reply_string.format(
+                some_images = "some images",
+                image_markdown_list = " ".join(image_markdowns),
+                unformated_prompt = unformated_prompt,
+                requested_style = requested_style,
+            )
+        ) # DEBUG
+        image_markdowns = []
+        iter = 0
+        for image_item in submission_images.values():
+            iter += 1
+            for proc_iter in range(120):
+                if image_item.get("status") == "unprocessed":
+                    time.sleep(1)
+                    logger.debug(f"Image still processing. Sleeping ({proc_iter}/10)")
+                    continue
+            if image_item.get("status") == "unprocessed":
+                self.set_faulted()
+                logger.error(f"Images taking unreasonably long to process. Aborting!")
+                return
+            largest_image = image_item['s']
+            image_url = largest_image['u']
+            image_markdowns.append(
+                f'[[Gen{iter}]]({image_url})'
+            )
+        try:
+            self.notification.reply(
+                reply_string.format(
+                    some_images = "some images",
+                    image_markdown_list = " ".join(image_markdowns),
+                    unformated_prompt = unformated_prompt,
+                    requested_style = requested_style,
+                )
+            )
+        except RedditAPIException as e:
+            self.set_faulted()
+            logger.error(f"Reddit Exception: {e}. Aborting!")
+            return
+
+    def upload_to_subreddit(self, gen, requested_style, unformated_prompt):
         images_payload = []
         for job in gen.get_all_done_jobs():
             image_dict = {
@@ -159,12 +223,10 @@ class MentionHandler:
             image_markdowns.append(
                 f'[[Gen{iter}]]({image_url})'
             )
-        for fn in gen.get_all_filenames():
-            os.remove(fn)
         try:
             self.notification.reply(
                 reply_string.format(
-                    submission_url = submission.permalink,
+                    some_images = f"[some images]({submission.permalink})",
                     image_markdown_list = " ".join(image_markdowns),
                     unformated_prompt = unformated_prompt,
                     requested_style = requested_style,
@@ -174,8 +236,6 @@ class MentionHandler:
             self.set_faulted()
             logger.error(f"Reddit Exception: {e}. Aborting!")
             return
-        db_r.setex(str(self.request_id), timedelta(days=120), 1)
-        self.status = JobStatus.DONE
 
     def handle_dm(self):
         # pp.pprint(notification)
