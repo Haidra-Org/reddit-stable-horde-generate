@@ -84,7 +84,7 @@ class MentionHandler:
             return
         db_r.setex(str(self.notification.author), timedelta(seconds=20), 1)
         unformated_prompt = reg_res.group(1)[0:500]
-        if blacklist.search(self.unformated_prompt):
+        if blacklist.search(unformated_prompt):
             logger.warning(f"Detected Blacklist item from {self.notification.author}")
             self.status = JobStatus.FAULTED
             return
@@ -124,7 +124,7 @@ class MentionHandler:
         if args.subreddit:
             self.upload_to_subreddit(gen, requested_style, unformated_prompt)
         else:
-            self.upload_to_r2()
+            self.upload_to_r2(gen, requested_style, unformated_prompt)
         self.status = JobStatus.DONE # Debug
         return # Debug
         for fn in gen.get_all_filenames():
