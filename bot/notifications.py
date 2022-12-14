@@ -87,17 +87,17 @@ class MentionHandler:
             return
         db_r.setex(str(self.notification.author), timedelta(seconds=20), 1)
         unformated_prompt = reg_res.group(1)[0:500]
-        if blacklist.search(unformated_prompt):
-            logger.warning(f"Detected Blacklist item from {self.notification.author}")
-            db_r.setex(f"horny_jail_{self.notification.author}", timedelta(seconds=20), 1)
-            self.set_faulted()
-            return
         negprompt = ''
         if modifier_seek_regex.search(unformated_prompt):
             por = prompt_only_regex.search(self.mention_content)
             unformated_prompt = por.group(1)
         if "###" in unformated_prompt:
             unformated_prompt, negprompt = unformated_prompt.split("###", 1)
+        if blacklist.search(unformated_prompt):
+            logger.warning(f"Detected Blacklist item from {self.notification.author}")
+            db_r.setex(f"horny_jail_{self.notification.author}", timedelta(seconds=20), 1)
+            self.set_faulted()
+            return
         logger.info(f"Starting generation from ID '{self.request_id}'. Prompt: {unformated_prompt}. Style: {requested_style}")
         submit_list = []
         for style in styles_array:
