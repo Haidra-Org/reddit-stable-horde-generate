@@ -90,7 +90,7 @@ class MentionHandler:
         if blacklist.search(unformated_prompt):
             logger.warning(f"Detected Blacklist item from {self.notification.author}")
             db_r.setex(f"horny_jail_{self.notification.author}", timedelta(seconds=20), 1)
-            self.status = JobStatus.FAULTED
+            self.set_faulted()
             return
         negprompt = ''
         if modifier_seek_regex.search(unformated_prompt):
