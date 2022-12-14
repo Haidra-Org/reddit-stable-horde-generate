@@ -149,13 +149,6 @@ class MentionHandler:
             image_markdowns.append(
                 f'[[Gen{iter}]]({image_url})'
             )
-        logger.debug(reply_string.format(
-                some_images = "some images",
-                image_markdown_list = " ".join(image_markdowns),
-                unformated_prompt = unformated_prompt,
-                requested_style = requested_style,
-            )
-        ) # DEBUG
         try:
             self.notification.reply(
                 reply_string.format(
