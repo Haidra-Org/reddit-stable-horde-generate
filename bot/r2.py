@@ -8,7 +8,7 @@ s3_client = boto3.client('s3', endpoint_url="https://a223539ccf6caa2d76459c9727d
 def upload_image(filename):
     try:
         response = s3_client.upload_file(
-            filename, "reddit", filename
+            filename, "reddit", filename,
             ExtraArgs={'ACL': 'public-read'}
         )
     except ClientError as e:
