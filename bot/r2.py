@@ -49,4 +49,4 @@ def generate_presigned_url(client_method, method_parameters, expires_in):
 
     
 def generate_img_download_url(filename):
-    return generate_presigned_url("get_object", {'Bucket': "reddit", 'Key': filename}, 6048000)
+    return generate_presigned_url("get_object", {'Bucket': "reddit", 'Key': filename}, 604799)
