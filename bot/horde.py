@@ -110,7 +110,9 @@ class HordeGenerate:
         # logger.debug(submit_results)
         req_id = submit_results['id']
         is_done = False
+        retry = 0
         while not is_done:
+            retry += 1
             try:
                 chk_req = requests.get(f'{HORDE_URL}/api/v2/generate/check/{req_id}')
             except Exception:
@@ -118,6 +120,10 @@ class HordeGenerate:
                 return
             if not chk_req.ok:
                 logger.error(chk_req.text)
+                self.status = JobStatus.FAULTED
+                return
+            if retry >= 100: 
+                logger.error("Image failed to return in a reasonable amount of time. Aborting")
                 self.status = JobStatus.FAULTED
                 return
             chk_results = chk_req.json()
