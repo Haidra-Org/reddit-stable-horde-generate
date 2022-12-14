@@ -1,5 +1,5 @@
 from datetime import datetime
-from horde.logger import logger
+from bot.logger import logger
 import boto3
 from botocore.exceptions import ClientError
 
