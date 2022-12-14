@@ -8,6 +8,7 @@ from bot.enums import JobStatus
 from bot.redisctrl import db_r
 from bot import reddit
 from bot.r2 import upload_image
+from bot.argparser import args
 from praw.exceptions import ClientException, RedditAPIException
 
 imgen_params = {
