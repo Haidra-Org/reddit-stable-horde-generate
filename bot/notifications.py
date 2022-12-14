@@ -136,7 +136,8 @@ class MentionHandler:
     def upload_to_r2(self, gen, requested_style, unformated_prompt):
         images_payload = []
         for job in gen.get_all_done_jobs():
-            upload_image(job.filename)
+            download_link = upload_image(job.filename)
+            logger.debug(download_link)
         logger.info(f"replying to {self.request_id}: {self.mention_content}")
         # logger.debug(f"{requested_style}: {unformated_prompt}")
         return # DEBUG
