@@ -62,6 +62,9 @@ class MentionHandler:
         if db_r.get(str(self.notification.author)):
             logger.warning(f"Too frequent requests from {self.notification.author}")
             return
+        if db_r.get(f"timeout_{self.notification.author}"):
+            logger.warning(f"{self.notification.author} currently in Horny Jail")
+            return
         if False: #TODO Ensure it's a comment mention
             self.handle_dm()
         else:
@@ -86,6 +89,7 @@ class MentionHandler:
         unformated_prompt = reg_res.group(1)[0:500]
         if blacklist.search(unformated_prompt):
             logger.warning(f"Detected Blacklist item from {self.notification.author}")
+            db_r.setex(f"timeout_{self.notification.author}", timedelta(seconds=20), 1)
             self.status = JobStatus.FAULTED
             return
         negprompt = ''
