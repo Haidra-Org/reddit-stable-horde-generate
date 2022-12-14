@@ -134,13 +134,20 @@ class MentionHandler:
         self.status = JobStatus.DONE
 
     def upload_to_r2(self, gen, requested_style, unformated_prompt):
-        images_payload = []
+        image_urls = []
         for job in gen.get_all_done_jobs():
             download_link = upload_image(job.filename)
-            logger.debug(download_link)
+            if download_link:
+                image_urls.append(download_link)
         logger.info(f"replying to {self.request_id}: {self.mention_content}")
         # logger.debug(f"{requested_style}: {unformated_prompt}")
-        return # DEBUG
+        image_markdowns = []
+        iter = 0
+        for image_url in image_urls:
+            iter += 1
+            image_markdowns.append(
+                f'[[Gen{iter}]]({image_url})'
+            )
         logger.debug(reply_string.format(
                 some_images = "some images",
                 image_markdown_list = " ".join(image_markdowns),
@@ -148,24 +155,6 @@ class MentionHandler:
                 requested_style = requested_style,
             )
         ) # DEBUG
-        image_markdowns = []
-        iter = 0
-        for image_item in submission_images.values():
-            iter += 1
-            for proc_iter in range(120):
-                if image_item.get("status") == "unprocessed":
-                    time.sleep(1)
-                    logger.debug(f"Image still processing. Sleeping ({proc_iter}/10)")
-                    continue
-            if image_item.get("status") == "unprocessed":
-                self.set_faulted()
-                logger.error(f"Images taking unreasonably long to process. Aborting!")
-                return
-            largest_image = image_item['s']
-            image_url = largest_image['u']
-            image_markdowns.append(
-                f'[[Gen{iter}]]({image_url})'
-            )
         try:
             self.notification.reply(
                 reply_string.format(
