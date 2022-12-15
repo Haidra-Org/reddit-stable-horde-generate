@@ -62,7 +62,7 @@ class MentionHandler:
         if db_r.get(str(self.notification.author)):
             logger.warning(f"Too frequent requests from {self.notification.author}")
             return
-        if db_r.get(f"horny_jail_{self.notification.author}"):
+        if self.notification.author != 'dbzer0' and db_r.get(f"horny_jail_{self.notification.author}"):
             logger.warning(f"{self.notification.author} currently in Horny Jail")
             return
         if False: #TODO Ensure it's a comment mention
@@ -93,7 +93,7 @@ class MentionHandler:
             unformated_prompt = por.group(1)
         if "###" in unformated_prompt:
             unformated_prompt, negprompt = unformated_prompt.split("###", 1)
-        if blacklist.search(unformated_prompt):
+        if self.notification.author != 'dbzer0' and blacklist.search(unformated_prompt):
             logger.warning(f"Detected Blacklist item from {self.notification.author}")
             db_r.setex(f"horny_jail_{self.notification.author}", timedelta(seconds=20), 1)
             self.set_faulted()
