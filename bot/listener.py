@@ -11,6 +11,7 @@ REDDIT_BLACKLIST =  [
 
 REDDIT_WHITELIST =  [
     "StableDiffusion",
+    "Piracy",
     None
 ]
 
