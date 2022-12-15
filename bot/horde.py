@@ -122,9 +122,10 @@ class HordeGenerate:
                 logger.error(chk_req.text)
                 self.status = JobStatus.FAULTED
                 return
-            if retry >= 100: 
+            if retry >= 300: 
                 logger.error("Image failed to return in a reasonable amount of time. Aborting")
                 self.status = JobStatus.FAULTED
+                self.is_possible = False
                 return
             chk_results = chk_req.json()
             logger.debug(chk_results)
