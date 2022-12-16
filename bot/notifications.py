@@ -43,7 +43,7 @@ Style: {requested_style}\n\n
 *I am [a bot](https://www.reddit.com/user/StableHorde/comments/znhtaw/faq/)*
 """
 if args.redirect:
-    reply_string += "*This account is obsolete. Please mention `u/{args.redirect}` from now on."
+    reply_string += f"*This account is obsolete. Please mention `u/{args.redirect}` from now on."
 else:
     reply_string += "*I am [a bot](https://www.reddit.com/user/StableHorde/comments/znhtaw/faq/)*"
 
