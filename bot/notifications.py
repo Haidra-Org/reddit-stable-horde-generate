@@ -1,4 +1,4 @@
-import requests, json, os, time, argparse, base64, random, re, pprint
+import requests, json, os, time, base64, random, re, pprint
 import threading
 from bs4 import BeautifulSoup
 from datetime import timedelta
@@ -40,8 +40,12 @@ Here are {some_images} matching your request\n
 {image_markdown_list}\n
 Prompt: {unformated_prompt}\n
 Style: {requested_style}\n\n
-*I am a bot*
+*I am [a bot](https://www.reddit.com/user/StableHorde/comments/znhtaw/faq/)*
 """
+if args.redirect:
+    reply_string += "*This account is obsolete. Please mention `u/{args.redirect}` from now on."
+else:
+    reply_string += "*I am [a bot](https://www.reddit.com/user/StableHorde/comments/znhtaw/faq/)*"
 
 class MentionHandler:
 
