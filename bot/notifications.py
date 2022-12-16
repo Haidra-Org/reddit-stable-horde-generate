@@ -40,8 +40,8 @@ Here are {some_images} matching your request\n
 {image_markdown_list}\n
 Prompt: {unformated_prompt}\n
 Style: {requested_style}\n\n
-*I am [a bot](https://www.reddit.com/user/StableHorde/comments/znhtaw/faq/)*
 """
+logger.debug(args.redirect)
 if args.redirect:
     reply_string += f"*This account is obsolete. Please mention `u/{args.redirect}` from now on."
 else:
