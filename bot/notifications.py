@@ -29,7 +29,7 @@ pp = pprint.PrettyPrinter(depth=3)
 term_regex = re.compile(r'draw for me (.+)', re.IGNORECASE)
 modifier_seek_regex = re.compile(r'style:', re.IGNORECASE)
 prompt_only_regex = re.compile(r'draw for me (.+)style:', re.IGNORECASE)
-style_regex = re.compile(r'style: *([\w+-* ]+)', re.IGNORECASE)
+style_regex = re.compile(r'style: *([\w+* -]+)', re.IGNORECASE)
 
 blacklist = re.compile(os.getenv("BLACKLIST"), re.IGNORECASE)
 
