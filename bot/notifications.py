@@ -29,7 +29,7 @@ pp = pprint.PrettyPrinter(depth=3)
 term_regex = re.compile(r'draw for me (.+)', re.IGNORECASE)
 modifier_seek_regex = re.compile(r'style:', re.IGNORECASE)
 prompt_only_regex = re.compile(r'draw for me (.+)style:', re.IGNORECASE)
-style_regex = re.compile(r'style: *([\w ]+)', re.IGNORECASE)
+style_regex = re.compile(r'style: *([\w+-* ]+)', re.IGNORECASE)
 
 blacklist = re.compile(os.getenv("BLACKLIST"), re.IGNORECASE)
 
@@ -273,7 +273,7 @@ def get_styles():
                     break
                 logger.warning(f"Error during file download. Retrying ({iter+1}/3)")
                 time.sleep(1)
-    return(jsons)
+    return jsons
 
 def parse_style(mention_content):
     '''retrieves the styles requested and returns a list of unformated style prompts and the models to use'''
@@ -300,4 +300,4 @@ def parse_style(mention_content):
                 continue
             style_array.append(styles[random_style])
     logger.debug(style_array)
-    return(style_array, requested_style)
+    return style_array, requested_style
