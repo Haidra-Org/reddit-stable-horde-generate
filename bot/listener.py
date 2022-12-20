@@ -10,9 +10,10 @@ REDDIT_BLACKLIST =  [
 ]
 
 REDDIT_WHITELIST =  [
-    "StableDiffusion",
-    "Piracy",
-    None
+    # "StableHorde",
+    # "StableDiffusion",
+    # "Piracy",
+    # None
 ]
 
 class StreamListenerExtended:
