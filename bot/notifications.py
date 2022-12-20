@@ -129,10 +129,10 @@ class MentionHandler:
                     self.reply_faulted("Something went wrong when trying to fulfil your request. Please try again later")
                 return
             time.sleep(1)
-        if args.subreddit:
-            self.upload_to_subreddit(gen, requested_style, unformated_prompt)
-        else:
+        if args.r2:
             self.upload_to_r2(gen, requested_style, unformated_prompt)
+        else:
+            self.upload_to_subreddit(gen, requested_style, unformated_prompt)
         for fn in gen.get_all_filenames():
             os.remove(fn)
         db_r.setex(str(self.request_id), timedelta(days=120), 1)
