@@ -3,6 +3,7 @@ import time
 from bot import reddit
 from bot.logger import logger
 from bot.notifications import MentionHandler
+from bot.redisctrl import db_r
 
 REDDIT_BLACKLIST =  [
     "suicidewatch"
@@ -28,6 +29,9 @@ class StreamListenerExtended:
         self.queue_thread.daemon = True
         self.queue_thread.start()
         for item in reddit.inbox.stream():
+            if db_r.get(str(item.id)):
+                logger.debug(f"Skipping {item.id} as it's done already")
+                continue           
             if len(REDDIT_WHITELIST) and item.subreddit not in REDDIT_WHITELIST:
                 logger.warning(f"Avoiding comment {item} in non-whitelisted subreddit {item.subreddit}")
                 continue
