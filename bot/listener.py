@@ -8,6 +8,7 @@ from bot.redisctrl import db_r
 REDDIT_BLACKLIST =  [
     "suicidewatch"
     "depression"
+    "art"
 ]
 
 REDDIT_WHITELIST =  [
