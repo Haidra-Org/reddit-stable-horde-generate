@@ -9,7 +9,8 @@ from bot.redisctrl import db_r
 from bot import reddit
 from bot.r2 import upload_image
 from bot.argparser import args
-from praw.exceptions import ClientException, RedditAPIException, ServerError
+from praw.exceptions import ClientException, RedditAPIException
+from prawcore.exceptions import ServerError
 
 imgen_params = {
     "n": 1,
