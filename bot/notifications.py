@@ -9,7 +9,7 @@ from bot.redisctrl import db_r
 from bot import reddit
 from bot.r2 import upload_image
 from bot.argparser import args
-from praw.exceptions import ClientException, RedditAPIException
+from praw.exceptions import ClientException, RedditAPIException, ServerError
 
 imgen_params = {
     "n": 1,
@@ -187,7 +187,7 @@ class MentionHandler:
                 self.set_faulted()
                 logger.error(f"Bad filename. Aborting!")
                 return
-            except (RedditAPIException) as e:
+            except (RedditAPIException, ServerError) as e:
                 if iter >= 3:
                     self.set_faulted()
                     logger.error(f"Reddit Exception: {e}. Aborting!")
