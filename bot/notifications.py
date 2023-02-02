@@ -132,7 +132,7 @@ class MentionHandler:
                 self.reply_faulted("Something went wrong when trying to fulfil your request. Please try again later")
             return
         if gen.is_censored():
-            self.reply_faulted("Unfortunately all images from this request were censored by the automatic safety filer. Please tweak your prompt to avoid nsfw terms and try again.")
+            self.reply_faulted("Unfortunately all images from this request were censored by the automatic safety filter. Please tweak your prompt to avoid nsfw terms and try again.")
             return
         if args.r2:
             self.upload_to_r2(gen, requested_style, unformated_prompt)
@@ -185,7 +185,10 @@ class MentionHandler:
         logger.debug(f"{images_payload}")
         for iter in range(4):
             try:
-                submission = subreddit.submit_gallery(f"{requested_style}: {unformated_prompt}"[0:298], images_payload)
+                if len(images_payload) > 1:
+                    submission = subreddit.submit_gallery(f"{requested_style}: {unformated_prompt}"[0:298], images_payload)
+                else:
+                    submission = subreddit.submit_image(f"{requested_style}: {unformated_prompt}"[0:298], images_payload[0]["image_path"])
                 break
             except (ClientException) as e:
                 self.set_faulted()
