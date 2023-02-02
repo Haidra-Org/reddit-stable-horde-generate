@@ -106,7 +106,7 @@ logger.warning("disabled")
 logger.enable("")
 logger.enable(None)
 
-logger.add("logs/bot.log", retention="1 days", level=10)
+logger.add("logs/bot.log", retention="3 days", rotation="24h", compression="bz2", level=10)
 
 
 set_logger_verbosity(args.verbosity)
