@@ -124,16 +124,16 @@ class MentionHandler:
         # return
         gen = HordeMultiGen(submit_list, self.request_id)
         while not gen.all_gens_done():
-            if gen.is_faulted():
-                if not gen.is_possible():
-                    self.reply_faulted("It is not possible to fulfil this request using this style at the moment. Please select a different style and try again.")
-                else:
-                    self.reply_faulted("Something went wrong when trying to fulfil your request. Please try again later")
-                return
-            if gen.is_censored():
-                self.reply_faulted("Unfortunately all images from this request were censored by the automatic safety filer. Please tweak your prompt to avoid nsfw terms and try again.")
-                return
             time.sleep(1)
+        if gen.is_faulted():
+            if not gen.is_possible():
+                self.reply_faulted("It is not possible to fulfil this request using this style at the moment. Please select a different style and try again.")
+            else:
+                self.reply_faulted("Something went wrong when trying to fulfil your request. Please try again later")
+            return
+        if gen.is_censored():
+            self.reply_faulted("Unfortunately all images from this request were censored by the automatic safety filer. Please tweak your prompt to avoid nsfw terms and try again.")
+            return
         if args.r2:
             self.upload_to_r2(gen, requested_style, unformated_prompt)
         else:
