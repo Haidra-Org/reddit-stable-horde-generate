@@ -219,10 +219,10 @@ class MentionHandler:
                 image_markdowns.append(
                     f'[[Gen{iter}]]({image_url})'
                 )
-            else:
-                image_markdowns.append(
-                    f'[[Generation]]({submission.url})'
-                )                
+        else:
+            image_markdowns.append(
+                f'[[Generation]]({submission.url})'
+            )                
         try:
             self.notification.reply(
                 reply_string.format(
