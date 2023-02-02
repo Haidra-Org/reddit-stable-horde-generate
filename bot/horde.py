@@ -40,6 +40,13 @@ class HordeMultiGen:
                 faulted += 1
         return len(self.jobs) == faulted
 
+    def is_censored(self):
+        censored = 0
+        for job in self.jobs:
+            if job.status == JobStatus.CENSORED:
+                censored += 1
+        return len(self.jobs) == censored
+
     def is_possible(self):
         count = 0
         for job in self.jobs:
@@ -50,7 +57,7 @@ class HordeMultiGen:
     def get_all_ongoing_jobs(self):
         jobs = []
         for job in self.jobs:
-            if job.status in [JobStatus.FAULTED, JobStatus.DONE]:
+            if job.status in [JobStatus.FAULTED, JobStatus.DONE, JobStatus.CENSORED]:
                 continue
             jobs.append(job)
         return(jobs)
@@ -128,7 +135,7 @@ class HordeGenerate:
                 self.is_possible = False
                 return
             chk_results = chk_req.json()
-            logger.debug(chk_results)
+            logger.debug([self.submit_dict.get("models"), chk_results])
             is_done = chk_results['done']
             is_faulted = chk_results['faulted']
             self.is_possible = chk_results['is_possible']
@@ -156,6 +163,10 @@ class HordeGenerate:
             return
         results = results_json['generations']
         for iter in range(len(results)):
+            if results[iter]["censored"]:
+                logger.info("Image received censored")
+                self.status = JobStatus.CENSORED
+                return
             try:
                 img_bytes = requests.get(results[iter]["img"]).content
             except MissingSchema as e:
@@ -168,7 +179,7 @@ class HordeGenerate:
                 logger.error("Error reading image data")
                 self.status = JobStatus.FAULTED
                 return
-            self.filename = f"{self.unique_id}_{iter}_horde_generation.webp"
+            self.filename = f"{self.unique_id}_{iter}_horde_generation.jpg"
             self.seed = results[iter]["seed"]
             self.img.save(self.filename)
             logger.debug(f"Saved: {self.filename}")

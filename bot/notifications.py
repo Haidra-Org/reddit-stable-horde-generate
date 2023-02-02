@@ -16,7 +16,7 @@ imgen_params = {
     "n": 1,
     "karras": True,
     "steps": 10,
-    "post_processing": ['GFPGAN'],
+    "post_processing": [],
 }
 generic_submit_dict = {
     "prompt": "a horde of cute stable robots in a sprawling server room repairing a massive mainframe",
@@ -129,6 +129,9 @@ class MentionHandler:
                     self.reply_faulted("It is not possible to fulfil this request using this style at the moment. Please select a different style and try again.")
                 else:
                     self.reply_faulted("Something went wrong when trying to fulfil your request. Please try again later")
+                return
+            if gen.is_censored():
+                self.reply_faulted("Unfortunately all images from this request were censored by the automatic safety filer. Please tweak your prompt to avoid nsfw terms and try again.")
                 return
             time.sleep(1)
         if args.r2:
