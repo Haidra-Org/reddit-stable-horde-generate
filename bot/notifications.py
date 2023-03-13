@@ -199,9 +199,9 @@ class MentionHandler:
                     self.set_faulted()
                     logger.error(f"Reddit Exception: {e}. Aborting!")
                     return
+        image_markdowns = []
         if len(images_payload) > 1:
             submission_images = submission.media_metadata
-            image_markdowns = []
             iter = 0
             for image_item in submission_images.values():
                 iter += 1
