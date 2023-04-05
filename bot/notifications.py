@@ -33,8 +33,6 @@ modifier_seek_regex = re.compile(r'style:', re.IGNORECASE)
 prompt_only_regex = re.compile(r'draw for me (.+)style:', re.IGNORECASE)
 style_regex = re.compile(r'style: *([\w+*._ -]+)', re.IGNORECASE)
 
-blacklist = re.compile(os.getenv("BLACKLIST"), re.IGNORECASE)
-
 subreddit = reddit.subreddit("StableHorde")
 
 reply_string = """
@@ -99,11 +97,6 @@ class MentionHandler:
             unformated_prompt = por.group(1)
         if "###" in unformated_prompt:
             unformated_prompt, negprompt = unformated_prompt.split("###", 1)
-        if self.notification.author != 'dbzer0' and blacklist.search(unformated_prompt):
-            logger.warning(f"Detected Blacklist item from {self.notification.author}")
-            db_r.setex(f"horny_jail_{self.notification.author}", timedelta(seconds=20), 1)
-            self.set_faulted()
-            return
         logger.info(f"Starting generation from ID '{self.request_id}'. Prompt: {unformated_prompt}. Style: {requested_style}")
         submit_list = []
         for style in styles_array:
