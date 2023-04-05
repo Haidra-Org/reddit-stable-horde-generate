@@ -201,7 +201,7 @@ class MentionHandler:
                 for proc_iter in range(120):
                     if image_item.get("status") == "unprocessed":
                         time.sleep(1)
-                        logger.debug(f"Image still processing. Sleeping ({proc_iter}/10)")
+                        logger.debug(f"Image still processing. Sleeping ({proc_iter}/120)")
                         continue
                 if image_item.get("status") == "unprocessed":
                     self.set_faulted()
