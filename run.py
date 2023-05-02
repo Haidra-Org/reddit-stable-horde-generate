@@ -5,6 +5,7 @@ from bot.logger import logger
 from bot.listener import StreamListenerExtended
 from bot.notifications import MentionHandler
 from bot import reddit
+from loguru import logger
 
 
 @logger.catch(reraise=True)
@@ -13,6 +14,7 @@ def check_for_requests():
     for notification in reddit.inbox.all():
         # Avoid parsing comments older than 3 days
         if notification.created_utc < time.time() - (86400 * 3):
+            logger.debug([notification.created_utc,time.time() - (86400 * 3),notification.created_utc < time.time() - (86400 * 3)])
             continue
         notification_handler = MentionHandler(notification)
         thread = threading.Thread(target=notification_handler.handle_notification, args=())
