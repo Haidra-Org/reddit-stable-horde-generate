@@ -11,6 +11,9 @@ from bot import reddit
 def check_for_requests():
     waiting_threads = []
     for notification in reddit.inbox.all():
+        # Avoid parsing comments older than 3 days
+        if notification.created_utc < time.time() - (86400 * 3):
+            continue
         notification_handler = MentionHandler(notification)
         thread = threading.Thread(target=notification_handler.handle_notification, args=())
         thread.start()

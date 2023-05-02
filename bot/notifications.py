@@ -82,7 +82,7 @@ class MentionHandler:
         reg_res = term_regex.search(self.mention_content)
         if not reg_res:
             logger.info(f"{self.request_id} is not a generation request, skipping")
-            db_r.set(str(self.request_id), 1)
+            db_r.setex(str(self.request_id), timedelta(days=120), 1)
             self.status = JobStatus.DONE
             return
         styles_array, requested_style = parse_style(self.mention_content)
