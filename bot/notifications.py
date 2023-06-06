@@ -111,6 +111,8 @@ class MentionHandler:
             submit_dict["params"]["sampler_name"] = style.get("sampler", "k_euler_a")
             submit_dict["params"]["steps"] = style.get("steps", 45)
             submit_dict["params"]["cfg_scale"] = style.get("cfg_scale", 7.5)
+            if "loras" in style:
+                submit_dict["params"]["loras"] = style["loras"]
             submit_list.append(submit_dict)
         # logger.debug(submit_list)
         # self.reply_faulted("This is a test reply")
@@ -264,6 +266,11 @@ def get_styles():
             "url": "https://raw.githubusercontent.com/db0/Stable-Horde-Styles/main/categories.json",
             "default": {}
         },
+        # Horde models
+        {
+            "url": "https://aihorde.net/api/v2/status/models",
+            "default": []
+        },
     ]
     logger.debug("Downloading styles")
     jsons = []
@@ -287,22 +294,33 @@ def parse_style(mention_content):
     jsons = get_styles()
     styles = jsons[0]
     categories = jsons[1]
+    horde_models = jsons[2]
     style_array = []
-    requested_style = "raw"
+    requested_style = "featured"
     sr = style_regex.search(mention_content)
     if sr:
         requested_style = sr.group(1).lower()
     if requested_style in styles:
+        if not get_model_worker_count(styles[requested_style]["model"], horde_models):
+            logger.error(f"Style '{requested_style}' appear to have no workers. Aborting.")
+            return None, None
         for iter in range(4):
             style_array.append(styles[requested_style])
     elif requested_style in categories:
-        category_copy = []
+        category_styles = expand_category(categories,requested_style)
+        category_styles_running = category_styles.copy()
         for iter in range(4):
-            if len(category_copy) == 0:
-                category_copy = categories[requested_style].copy()
-            random_style = category_copy.pop(random.randrange(len(category_copy)))    
+            if len(category_styles_running) == 0:
+                category_styles_running = category_styles.copy()
+            random_style = category_styles_running.pop(random.randrange(len(category_styles_running)))    
             if random_style not in styles:
-                logger.error(f"Category has style {random_style} which cannot be found in styles json:")
+                logger.error(f"Category has style {random_style} which cannot be found in styles json. Skipping.")
+                continue
+            if not get_model_worker_count(styles[random_style]["model"], horde_models):
+                logger.warning(f"Category style {random_style} has no workers available. Skipping.")
+                if not len(category_styles_running) and not len(style_array):
+                    logger.error(f"All styles in category {requested_style} appear to have no workers. Aborting.")
+                    return None, None
                 continue
             style_array.append(styles[random_style])
     logger.debug(style_array)

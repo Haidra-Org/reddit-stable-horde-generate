@@ -31,7 +31,6 @@ class StreamListenerExtended:
         self.queue_thread.start()
         for item in reddit.inbox.stream():
             if item.created_utc < time.time() - (86400 * 3):
-                logger.debug([item.created_utc,time.time() - (86400 * 3),item.created_utc < time.time() - (86400 * 3)])
                 continue
             if db_r.get(str(item.id)):
                 logger.debug(f"Skipping {item.id} as it's done already")
