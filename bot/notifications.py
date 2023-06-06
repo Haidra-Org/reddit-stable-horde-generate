@@ -323,5 +323,21 @@ def parse_style(mention_content):
                     return None, None
                 continue
             style_array.append(styles[random_style])
-    logger.debug(style_array)
     return style_array, requested_style
+
+
+def expand_category(categories, category_name):
+    styles = []
+    for item in categories[category_name]:
+        if item in categories:
+            styles += expand_category(categories,item)
+        else:
+            styles.append(item)
+    return styles
+
+
+def get_model_worker_count(model_name, models_json):
+    for model_details in models_json:
+        if model_name == model_details["name"]:
+            return model_details["count"]
+    return 0
