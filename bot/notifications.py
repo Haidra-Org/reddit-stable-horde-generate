@@ -105,6 +105,8 @@ class MentionHandler:
             submit_dict = generic_submit_dict.copy()
             submit_dict["prompt"] = style["prompt"].format(p=unformated_prompt, np=negprompt)
             submit_dict["params"] = imgen_params.copy()
+            if style["model"] == "SDXL_beta::stability.ai#6901":
+                submit_dict["params"]["n"] = 2
             submit_dict["models"] = [style["model"]]
             submit_dict["params"]["width"] = style.get("width", 512)
             submit_dict["params"]["height"] = style.get("height", 512)
@@ -170,11 +172,12 @@ class MentionHandler:
     def upload_to_subreddit(self, gen, requested_style, unformated_prompt):
         images_payload = []
         for job in gen.get_all_done_jobs():
-            image_dict = {
-                "image_path": job.filename, 
-                "caption": f"Seed {job.seed}. Prompt: {job.prompt}"[0:179]
-            }
-            images_payload.append(image_dict)
+            for iter_fn in range(len(job.filenames)):
+                image_dict = {
+                    "image_path": job.filenames[iter_fn], 
+                    "caption": f"Seed {job.seeds[iter_fn]}. Prompt: {job.prompt}"[0:179]
+                }
+                images_payload.append(image_dict)
         logger.info(f"replying to {self.request_id}: {self.mention_content}")
         logger.debug(f"{requested_style}: {unformated_prompt}")
         logger.debug(f"{images_payload}")
@@ -304,12 +307,18 @@ def parse_style(mention_content):
         if not get_model_worker_count(styles[requested_style]["model"], horde_models):
             logger.error(f"Style '{requested_style}' appear to have no workers. Aborting.")
             return None, None
-        for iter in range(4):
+        n = 4
+        if requested_style == "sdxl":
+            n = 1
+        for iter in range(n):
             style_array.append(styles[requested_style])
     elif requested_style in categories:
         category_styles = expand_category(categories,requested_style)
         category_styles_running = category_styles.copy()
-        for iter in range(4):
+        n = 4
+        if "sdxl" in category_styles:
+            n = 1
+        for iter in range(n):
             if len(category_styles_running) == 0:
                 category_styles_running = category_styles.copy()
             random_style = category_styles_running.pop(random.randrange(len(category_styles_running)))    
