@@ -237,6 +237,7 @@ class MentionHandler:
             self.set_faulted()
             logger.error(f"Reddit Exception: {e}. Aborting!")
             return
+        logger.info("Crossposting to Lemmy")
         community_id = lemmy.discover_community("botart")
         image_body = ''
         for img_url in image_urls:
