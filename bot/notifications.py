@@ -11,6 +11,7 @@ from bot.r2 import upload_image
 from bot.argparser import args
 from praw.exceptions import ClientException, RedditAPIException
 from prawcore.exceptions import ServerError
+from bot.lemmy import lemmy
 
 imgen_params = {
     "n": 1,
@@ -198,6 +199,7 @@ class MentionHandler:
                     logger.error(f"Reddit Exception: {e}. Aborting!")
                     return
         image_markdowns = []
+        image_urls = []
         if len(images_payload) > 1:
             submission_images = submission.media_metadata
             iter = 0
@@ -214,6 +216,7 @@ class MentionHandler:
                     return
                 largest_image = image_item['s']
                 image_url = largest_image['u']
+                image_urls.append(image_url)
                 image_markdowns.append(
                     f'[[Gen{iter}]]({image_url})'
                 )
@@ -234,6 +237,19 @@ class MentionHandler:
             self.set_faulted()
             logger.error(f"Reddit Exception: {e}. Aborting!")
             return
+        community_id = lemmy.discover_community("botart")
+        image_body = ''
+        for img_url in image_urls:
+            image_body += f"![]({img_url})"
+        post_result = lemmy.post(
+            community_id=community_id,
+            post_name=f"{requested_style}: {unformated_prompt}"[0:298],
+            post_url=image_urls[0],
+            post_body=f"Prompt: {unformated_prompt}\n\nStyle: {requested_style}\n\n{image_body}"
+        )
+        if not post_result:
+            logger.warning("Failed to crosspost to Bot Art")
+
 
     def handle_dm(self):
         # pp.pprint(notification)
