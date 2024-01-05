@@ -247,9 +247,9 @@ class MentionHandler:
             image_body += f"![]({img_url})"
         post_result = lemmy.post(
             community_id=community_id,
-            post_name=f"{requested_style}: {unformated_prompt}"[0:298],
-            post_url=image_urls[0],
-            post_body=f"Prompt: {unformated_prompt}\n\nStyle: {requested_style}\n\n{image_body}"
+            name=f"{requested_style}: {unformated_prompt}"[0:298],
+            url=image_urls[0],
+            body=f"Prompt: {unformated_prompt}\n\nStyle: {requested_style}\n\n{image_body}"
         )
         if not post_result:
             logger.warning("Failed to crosspost to Bot Art")
