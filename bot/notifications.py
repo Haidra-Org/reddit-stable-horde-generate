@@ -247,7 +247,7 @@ class MentionHandler:
             image_body += f"![]({img_url})"
         post_result = lemmy.post(
             community_id=community_id,
-            name=f"{requested_style}: {unformated_prompt}"[0:298],
+            name=f"{requested_style}: {unformated_prompt}"[0:200],
             url=image_urls[0],
             body=f"Prompt: {unformated_prompt}\n\nStyle: {requested_style}\n\n{image_body}"
         )
